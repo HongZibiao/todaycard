@@ -129,7 +129,8 @@ function createWindow() {
       sandbox: true,
       spellcheck: false,
       devTools: isDev,
-      backgroundThrottling: false,
+      // 不主动关后台节流：窗口被别的程序盖住时让 Chromium 自己省电，
+      // 时间推进由主进程的定时器负责，渲染层慢一拍不影响正确性。
     },
   });
 
