@@ -1,0 +1,55 @@
+appId: com.todaycard.app
+productName: 今日卡
+copyright: Copyright © 2026 yixin
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - src/**/*
+  - assets/**/*
+  - package.json
+  - '!**/*.map'
+  - '!**/node_modules/**'
+
+asar: true
+compression: maximum
+
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  artifactName: TodayCard-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: 今日卡
+  deleteAppDataOnUninstall: false
+
+portable:
+  artifactName: TodayCard-${version}-portable.${ext}
+
+mac:
+  icon: build/icon.png
+  category: public.app-category.productivity
+  target:
+    - dmg
+  artifactName: TodayCard-${version}-${arch}.${ext}
+
+linux:
+  icon: build/icon.png
+  category: Utility
+  target:
+    - AppImage
+  artifactName: TodayCard-${version}-${arch}.${ext}

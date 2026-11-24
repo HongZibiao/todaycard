@@ -1,0 +1,39 @@
+{
+  "name": "todaycard",
+  "productName": "今日卡",
+  "version": "1.0.0",
+  "description": "轻量桌面今日计划卡片 —— 把今天要做的事摆在桌面角落,由 AI 帮你排好先后与时间。",
+  "main": "src/main/main.js",
+  "author": {
+    "name": "yixin",
+    "email": "yixin@example.com"
+  },
+  "license": "MIT",
+  "private": true,
+  "keywords": [
+    "electron",
+    "desktop-widget",
+    "todo",
+    "daily-planner",
+    "ai"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "icons": "node scripts/gen-icons.js",
+    "pack": "npm run icons && electron-builder --dir",
+    "dist": "npm run icons && electron-builder",
+    "dist:win": "npm run icons && electron-builder --win",
+    "lint": "node --check src/main/main.js && node --check src/renderer/app.js"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.0.0",
+    "vitest": "^5.0.0"
+  }
+}

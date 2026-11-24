@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'"
+    />
+    <title>今日卡</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="card" id="card">
+      <header class="head">
+        <div class="head-left">
+          <div class="date" id="dateLine">今天</div>
+          <div class="sub" id="progressLine">还没排事</div>
+        </div>
+        <div class="head-actions">
+          <button class="pill" id="btnPlan" title="按今天的剩余时间重排顺序">排一下</button>
+          <button class="icon" id="btnSettings" title="设置">⚙</button>
+          <button class="icon" id="btnHide" title="收进托盘（Esc）">✕</button>
+        </div>
+      </header>
+
+      <div class="progress"><i id="progressBar"></i></div>
+
+      <section class="now hidden" id="nowCard">
+        <div class="now-label">现在</div>
+        <div class="now-title" id="nowTitle"></div>
+        <div class="now-meta">
+          <span id="nowRange"></span>
+          <span>·</span>
+          <span id="nowLeft"></span>
+        </div>
+        <div class="now-step hidden" id="nowStep"></div>
+      </section>
+
+      <section class="plan-note hidden" id="planNote">
+        <div class="plan-note-text" id="planNoteText"></div>
+        <ul class="plan-tips hidden" id="planTips"></ul>
+      </section>
+
+      <main class="list" id="list"></main>
+
+      <footer class="foot">
+        <form class="capture" id="captureForm">
+          <input
+            id="captureInput"
+            type="text"
+            placeholder="添加今天要做的事，回车确认"
+            maxlength="200"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="submit" class="add" title="添加">＋</button>
+        </form>
+        <div class="foot-hint" id="footHint">Esc 收起 · 右键卡片有更多</div>
+      </footer>
+
+      <!-- 设置浮层 -->
+      <section class="settings hidden" id="settings">
+        <div class="settings-head">
+          <div class="settings-title">设置</div>
+          <button class="icon" id="btnCloseSettings" title="返回">✕</button>
+        </div>
+
+        <div class="settings-body">
+          <div class="group">
+            <div class="group-title">时间安排</div>
+            <div class="field">
+              <span class="field-label">一天从</span>
+              <div class="field-ctl">
+                <input type="time" id="setDayStart" />
+                <span class="field-hint" style="align-self: center">到</span>
+                <input type="time" id="setDayEnd" />
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">午休</span>
+              <div class="field-ctl">
+                <input type="time" id="setLunchStart" />
+                <span class="field-hint" style="align-self: center">到</span>
+                <input type="time" id="setLunchEnd" />
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">单件事默认时长</span>
+              <div class="field-ctl">
+                <input type="number" id="setFocusMin" min="10" max="180" step="5" />
+                <span class="field-hint" style="align-self: center">分钟</span>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">两件事之间留空</span>
+              <div class="field-ctl">
+                <input type="number" id="setBufferMin" min="0" max="60" step="5" />
+                <span class="field-hint" style="align-self: center">分钟</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-title">AI 排程</div>
+            <div class="field">
+              <div>
+                <div class="field-label">用 AI 帮我排</div>
+                <div class="field-hint">关掉也能用，走本地规则</div>
+              </div>
+              <div class="field-ctl">
+                <button class="switch" id="setAiEnabled" role="switch" aria-checked="false"></button>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">服务商</span>
+              <div class="field-ctl">
+                <select id="setProvider"></select>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">接口地址</span>
+              <div class="field-ctl">
+                <input type="text" id="setBaseUrl" placeholder="https://api.deepseek.com/v1" />
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">模型</span>
+              <div class="field-ctl">
+                <input type="text" id="setModel" placeholder="deepseek-chat" />
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">API Key</span>
+              <div class="field-ctl">
+                <input type="password" id="setApiKey" placeholder="留空表示不修改" autocomplete="off" />
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label"></span>
+              <div class="field-ctl">
+                <button class="btn" id="btnTestAi">测试连接</button>
+                <button class="btn primary" id="btnSaveAi">保存</button>
+              </div>
+            </div>
+            <div class="status hidden" id="aiStatus"></div>
+          </div>
+
+          <div class="group">
+            <div class="group-title">外观与行为</div>
+            <div class="field">
+              <span class="field-label">主题</span>
+              <div class="field-ctl">
+                <select id="setTheme">
+                  <option value="light">浅色</option>
+                  <option value="dark">深色</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div>
+                <div class="field-label">窗口置顶</div>
+                <div class="field-hint">盖在其他窗口上面</div>
+              </div>
+              <div class="field-ctl">
+                <button class="switch" id="setAlwaysOnTop" role="switch" aria-checked="true"></button>
+              </div>
+            </div>
+            <div class="field">
+              <div>
+                <div class="field-label">开机自启</div>
+                <div class="field-hint">登录后自动出现在桌面角落</div>
+              </div>
+              <div class="field-ctl">
+                <button class="switch" id="setAutostart" role="switch" aria-checked="true"></button>
+              </div>
+            </div>
+            <div class="field">
+              <div>
+                <div class="field-label">到点提醒</div>
+                <div class="field-hint">每件事开始时弹一次系统通知</div>
+              </div>
+              <div class="field-ctl">
+                <button class="switch" id="setNotify" role="switch" aria-checked="true"></button>
+              </div>
+            </div>
+            <div class="field">
+              <div>
+                <div class="field-label">显示已完成</div>
+                <div class="field-hint">关掉后做完的事自动隐去</div>
+              </div>
+              <div class="field-ctl">
+                <button class="switch" id="setShowCompleted" role="switch" aria-checked="true"></button>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">唤起快捷键</span>
+              <div class="field-ctl">
+                <input type="text" id="setHotkey" placeholder="Control+Alt+T" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-foot">
+          <button class="btn" id="btnOpenData">数据文件夹</button>
+          <span class="ver" id="verLine"></span>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
